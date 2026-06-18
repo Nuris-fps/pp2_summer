@@ -44,4 +44,4 @@ def name(name, surname):
   print("Hello", name, surname)
 
 awper_name = {"name": "Oleksandr", "surname": "Kostylev"}
-name(**awper) # Same as: name(name="Oleksandr", surname="Kostylev") 
+name(**awper_name) # Same as: name(name="Oleksandr", surname="Kostylev") 

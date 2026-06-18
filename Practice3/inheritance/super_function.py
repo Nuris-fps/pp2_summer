@@ -1,3 +1,8 @@
+class Person:
+  def __init__(self, fname, lname):
+    self.firstname = fname
+    self.lastname = lname
+
 class Supernatural(Person):
   def __init__(self, fname, lname, power,universe):
     super().__init__(fname, lname)           #inherit method and properties from the parent class
