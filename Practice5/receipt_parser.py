@@ -67,7 +67,7 @@ def splitUpper():
     for i in l:
         if len(i) != 0:
             l2.append(i)
-    print(l) # if AskarOralkhan [ [], 'skar', 'ralkhan' ]
+    print(l) 
     print(l2)
 # splitUpper()
 
