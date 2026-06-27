@@ -1,91 +1,49 @@
 import re
+import json
 
-def ZeroOrMoreB():
-    txt = input()
-    x = re.findall("ab*", txt)
-    print(x)
-# ZeroOrMoreB()
-# zero or more "b" following "a"
 
-def TwoOrThree():
-    txt = input()
-    x = re.findall("ab{2,3}", txt)
-    print(x)
-# TwoOrThree()
-# two or three "b" following "a"
 
-def sequenceOfLowerLetters():
-    txt = input()
-    l = []
-    pattern = r'^[a-z]+_[a-z]+$'
-    words = txt.split()
-    matches = [w for w in words if re.match(pattern, w)]
-    print(matches)
-sequenceOfLowerLetters()
+filename = "raw.txt"
+def parse_receipt(filename):
+    with open(filename, "r",encoding = "utf-8",errors="ignore") as file:
+        txt = file.read()
 
-def findAa():
-    txt = input()
-    x = re.findall("[A-Z][a-z]+", txt)
-    print(x)
-# findAa()
 
-def startWithAEndWithB():
-    txt = input()
-    x = re.findall("^a.*b$", txt)
-    print(x)
-# startWithAEndWithB()
+    # Extract prices of product
+    prices = re.findall(r'\d+,\d{2}', txt)
+    prices = [float(price.replace(',', '.')) for price in prices]
 
-def replace():
-    txt = input()
-    x = txt
-    # pattern = ",. "
-    x = re.sub(r"\s", ":", txt)
-    x = re.sub(r"[.]", ":", x)
-    x = re.sub(r",", ":", x)
-# replace()
+    # Extract names of product
+    product_pattern = r'\d+\.\n([^\n]+)'
+    products = re.findall(product_pattern, txt)
 
-def snakeToCamel():
-    txt = input()
-    x = txt.split("_")
-    for i in range(1, len(x)):
-        x[i] = x[i].capitalize()
-    for x in x:
-        print(x, end='')
-# snakeToCamel()
+    # Extract total
+    total_match = re.search(r'Total\s+(\d+\.\d{2})', txt, re.IGNORECASE)
+    total = float(total_match.group(1)) if total_match else sum(prices)
 
-def splitUpper():
-    txt = input()
-    x = txt
-    for i in range(0, len(x)):
-        if x[i].isupper():
-            x1 = x[:i]
-            x2 = x[i + 1:]
-            x = x1 + ' ' + x2
-    # l = x.split(' ')
-    l = re.split(r"\s", x)
-    l2 = []
-    for i in l:
-        if len(i) != 0:
-            l2.append(i)
-    print(l) 
-    print(l2)
-# splitUpper()
+    # Extract date
+    date_match = re.search(r'\d{2}[/-]\d{2}[/-]\d{4}', txt)
+    date = date_match.group() if date_match else "Not found"
 
-def splitUpper2():
-    txt = input()
-    x = re.sub(r"([A-Z][a-z]+)", r" \1", txt).strip()
-    print(x)
-# splitUpper2()
+    # Extract time
+    time_match = re.search(r'\d{2}:\d{2}(?::\d{2})?', txt)
+    time = time_match.group() if time_match else "Not found"
 
-def camelToSnake():
-    txt = input()    
-    x = re.sub(r"([A-Z][a-z]+)", r" \1", txt).strip()
-    # camelCase
-    # print(x)
-    # camel Case
-    x = x.split(' ')
-    s = ''
-    for i in range(0, len(x)):
-        s += x[i].lower() + '_'
-    print(s[:-1]) # deleting last character
-camelToSnake()
+    # Extract payment method
+    payment_match = re.search(
+        r'(Cash|Card|Visa|MasterCard)', txt, re.IGNORECASE)
+    payment_method = payment_match.group() if payment_match else "Not found"
+
+    # Structured output
+    data = {
+        "products": products,
+        "prices": prices,
+        "total": total,
+        "date": date,
+        "time": time,
+        "payment_method": payment_method
+    }
+
+    print(json.dumps(data, indent=4, ensure_ascii=False))
+
+parse_receipt(filename)
